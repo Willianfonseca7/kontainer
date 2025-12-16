@@ -1,20 +1,97 @@
-# node
+# Node
 node_modules/
 dist/
+lib-cov
+lcov.info
+pids
+logs
+results
+.node_history
 
-# env
+# Environment / Strapi
 .env
 .env.*
-
-# strapi
-.backend/.cache/
+.strapi
+.strapi-updater.json
+.strapi-cloud.json
+.tsbuildinfo
+exports
+build
 backend/.tmp/
 backend/database/
+public/uploads/*
+!public/uploads/.gitkeep
 
-# logs
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.eslintcache
+.tmp
+*.log
 
 # OS
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+._*
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Packages and binaries
+*.7z
+*.csv
+*.dat
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.seed
+*.so
+*.swo
+*.swp
+*.swn
+*.swm
+*.out
+*.pid
+
+# Databases
+*.sql
+*.sqlite
+*.sqlite3
+
+# Misc
+*#
+ssl
+.idea
+nbproject
+.pnp.*
+yarn-error.log
+
+# Package managers
+.yarn/*
+!.yarn/cache
+!.yarn/unplugged
+!.yarn/patches
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Tests
+coverage
