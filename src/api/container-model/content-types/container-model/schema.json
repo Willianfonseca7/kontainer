@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "container_models",
+  "info": {
+    "singularName": "container-model",
+    "pluralName": "container-models",
+    "displayName": "container-model"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "size_m2": {
+      "type": "decimal",
+      "required": true
+    },
+    "volume_m3": {
+      "type": "decimal"
+    },
+    "base_price": {
+      "type": "string",
+      "required": true
+    },
+    "features": {
+      "type": "json"
+    }
+  }
+}
