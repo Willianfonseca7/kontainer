@@ -15,13 +15,11 @@
       "type": "string",
       "required": true
     },
-    "availability_status": {
+    "size": {
       "type": "enumeration",
-      "required": false,
-      "default": "available, reserved, rented",
-      "enum": [
-        "available, reserved, rented"
-      ]
+      "enum": ["S", "M", "L"],
+      "required": true,
+      "default": "M"
     },
     "has_camera": {
       "type": "boolean",
@@ -29,6 +27,15 @@
     },
     "internal_camera_id": {
       "type": "string"
+    },
+    "availability_status": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "available",
+        "reserved",
+        "rented"
+      ]
     }
   }
 }

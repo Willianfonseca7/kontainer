@@ -513,9 +513,9 @@ export interface ApiContainerContainer extends Struct.CollectionTypeSchema {
   };
   attributes: {
     availability_status: Schema.Attribute.Enumeration<
-      ['available, reserved, rented']
+      ['available', 'reserved', 'rented']
     > &
-      Schema.Attribute.DefaultTo<'available, reserved, rented'>;
+      Schema.Attribute.Required;
     code: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -529,6 +529,9 @@ export interface ApiContainerContainer extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    size: Schema.Attribute.Enumeration<['S', 'M', 'L']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'M'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
