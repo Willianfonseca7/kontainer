@@ -21,6 +21,12 @@
       "required": true,
       "default": "M"
     },
+    "city": {
+      "type": "enumeration",
+      "enum": ["Dusseldorf", "Koeln"],
+      "required": true,
+      "default": "Dusseldorf"
+    },
     "has_camera": {
       "type": "boolean",
       "default": false
@@ -36,6 +42,12 @@
         "reserved",
         "rented"
       ]
+    },
+    "reservation_requests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::reservation-request.reservation-request",
+      "mappedBy": "container"
     }
   }
 }

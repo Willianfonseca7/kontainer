@@ -1,0 +1,62 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reservation_requests",
+  "info": {
+    "singularName": "reservation-request",
+    "pluralName": "reservation-requests",
+    "displayName": "Reservation Request"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "city": {
+      "type": "enumeration",
+      "enum": ["DUS", "KOL"],
+      "required": true
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": ["S", "M", "L"],
+      "required": true
+    },
+    "wants_camera": {
+      "type": "boolean",
+      "default": false
+    },
+    "start_date": {
+      "type": "date",
+      "required": true
+    },
+    "end_date": {
+      "type": "date"
+    },
+    "customer_name": {
+      "type": "text",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "phone": {
+      "type": "text"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["new", "contacted", "confirmed", "rejected"],
+      "default": "new",
+      "required": true
+    },
+    "notes": {
+      "type": "text"
+    },
+    "container": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::container.container",
+      "inversedBy": "reservation_requests"
+    }
+  }
+}

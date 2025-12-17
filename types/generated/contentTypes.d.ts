@@ -516,6 +516,9 @@ export interface ApiContainerContainer extends Struct.CollectionTypeSchema {
       ['available', 'reserved', 'rented']
     > &
       Schema.Attribute.Required;
+    city: Schema.Attribute.Enumeration<['Dusseldorf', 'Koeln']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Dusseldorf'>;
     code: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -529,6 +532,9 @@ export interface ApiContainerContainer extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    city: Schema.Attribute.Enumeration<['Dusseldorf', 'Koeln']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Dusseldorf'>;
     size: Schema.Attribute.Enumeration<['S', 'M', 'L']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'M'>;
