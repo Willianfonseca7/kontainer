@@ -44,7 +44,7 @@ export function Header() {
         {!isAuthenticated ? (
           <div className="flex items-center gap-2">
             <Link to="/login" className={buttonClasses('ghost')}>
-              Entrar / Cadastrar
+              Anmelden / Registrieren
             </Link>
           </div>
         ) : (
