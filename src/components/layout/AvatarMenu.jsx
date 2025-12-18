@@ -28,14 +28,14 @@ export function AvatarMenu() {
             className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
             onClick={() => setOpen(false)}
           >
-            Meu perfil
+            Mein Profil
           </Link>
           <Link
             to="/my-reservations"
             className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
             onClick={() => setOpen(false)}
           >
-            Minhas reservas
+            Meine Reservierungen
           </Link>
           <button
             onClick={() => {
@@ -44,7 +44,7 @@ export function AvatarMenu() {
             }}
             className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
           >
-            Sair
+            Abmelden
           </button>
         </div>
       )}
