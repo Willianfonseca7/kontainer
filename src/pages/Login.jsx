@@ -16,7 +16,7 @@ export default function Login() {
 
   // Strapi redirect target für OAuth (Facebook)
   const strapiFacebookUrl =
-    "http://localhost:1337/api/auth/facebook?redirect=http://localhost:5173/auth/callback";
+    "http://localhost:1337/api/connect/facebook?redirect=http://localhost:5173/auth/callback";
 
   const extractMessage = (err) => {
     const apiMsg = err?.response?.data?.error?.message;
