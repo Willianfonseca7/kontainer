@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { authService } from "../lib/authService";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, register, consumeRedirectPath } = useAuth();
+
   const [mode, setMode] = useState("login"); // login | register
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,12 +14,20 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Wandelt Strapi-Fehler in klare Meldungen um.
+  // Strapi redirect target für OAuth (Facebook)
+  const strapiFacebookUrl = "http://localhost:1337/api/connect/facebook";
+
   const extractMessage = (err) => {
     const apiMsg = err?.response?.data?.error?.message;
     if (apiMsg) return apiMsg;
-    if (err?.message === "Network Error") return "Network error. Try again.";
-    return err?.message || "Unknown error.";
+    if (err?.message === "Network Error") return "Netzwerkfehler. Bitte erneut versuchen.";
+    return err?.message || "Unbekannter Fehler.";
+  };
+
+  const redirectAfterLogin = () => {
+    const fromState = location.state?.from;
+    const stored = consumeRedirectPath();
+    navigate(fromState || stored || "/dashboard", { replace: true });
   };
 
   const handleSubmit = async (e) => {
@@ -25,28 +36,23 @@ export default function Login() {
     setLoading(true);
     try {
       if (mode === "login") {
-        await authService.login({ identifier: email, password });
+        await login({ identifier: email, password });
       } else {
-        await authService.register({ username: username || email, email, password });
+        await register({ username: username || email, email, password });
       }
-      navigate("/dashboard");
+      redirectAfterLogin();
     } catch (err) {
-      const msg = extractMessage(err);
-      setError(msg);
+      setError(extractMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
-  const strapiFacebookUrl = "http://localhost:1337/api/connect/facebook";
-
   return (
     <div className="max-w-xl space-y-6">
       <div>
         <h1 className="text-3xl font-semibold">Access your account</h1>
-        <p className="text-muted-foreground">
-          Sign in or create an account to continue to your dashboard.
-        </p>
+        <p className="text-muted-foreground">Sign in or create an account to continue.</p>
       </div>
 
       <div className="flex gap-2">
@@ -54,9 +60,7 @@ export default function Login() {
           type="button"
           onClick={() => setMode("login")}
           className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition ${
-            mode === "login"
-              ? "bg-primary text-primary-foreground"
-              : "bg-card text-foreground"
+            mode === "login" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
           }`}
         >
           Sign in
@@ -65,9 +69,7 @@ export default function Login() {
           type="button"
           onClick={() => setMode("register")}
           className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition ${
-            mode === "register"
-              ? "bg-primary text-primary-foreground"
-              : "bg-card text-foreground"
+            mode === "register" ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
           }`}
         >
           Register

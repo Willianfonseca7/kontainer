@@ -1,16 +1,10 @@
 import { api } from "./api";
 
-// Speichert Token und User lokal nach erfolgreichem Login/Registrierung.
-const persistSession = (jwt, user) => {
-  localStorage.setItem("jwt", jwt);
-  localStorage.setItem("user", JSON.stringify(user));
-};
-
+// Liefert Token/User zurück; Persistenz erfolgt im AuthContext.
 export const authService = {
   async login({ identifier, password }) {
     const res = await api.post("/auth/local", { identifier, password });
     const { jwt, user } = res.data;
-    persistSession(jwt, user);
     return { jwt, user };
   },
 
@@ -21,7 +15,6 @@ export const authService = {
       password,
     });
     const { jwt, user } = res.data;
-    persistSession(jwt, user);
     return { jwt, user };
   },
 };

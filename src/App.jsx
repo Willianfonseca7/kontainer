@@ -5,7 +5,9 @@ import Kontainers from '@/pages/Kontainers'
 import About from '@/pages/About'
 import Contact from '@/pages/Contact'
 import Login from '@/pages/Login'
-import Register from '@/pages/Register'
+import Account from '@/pages/Account'
+import MyReservations from '@/pages/MyReservations'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 import './App.css'
 
 function App() {
@@ -17,7 +19,22 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route
+          path="account"
+          element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="my-reservations"
+          element={
+            <ProtectedRoute>
+              <MyReservations />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Home />} />
       </Route>
     </Routes>

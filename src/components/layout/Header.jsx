@@ -1,5 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { buttonClasses } from '@/components/ui/Button'
+import { useAuth } from '@/hooks/useAuth'
+import { AvatarMenu } from '@/components/layout/AvatarMenu'
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -12,6 +14,8 @@ const navLinkClass =
   'px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground'
 
 export function Header() {
+  const { isAuthenticated } = useAuth()
+
   return (
     <header className="border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -37,14 +41,15 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <Link to="/login" className={buttonClasses('ghost')}>
-            Login
-          </Link>
-          <Link to="/register" className={buttonClasses()}>
-            Reserve
-          </Link>
-        </div>
+        {!isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <Link to="/login" className={buttonClasses('ghost')}>
+              Entrar / Cadastrar
+            </Link>
+          </div>
+        ) : (
+          <AvatarMenu />
+        )}
       </div>
     </header>
   )

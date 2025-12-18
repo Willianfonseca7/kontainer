@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -16,6 +15,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { ReservationFlow } from "./ReservationFlow";
+import { OfferForm } from "./OfferForm";
+import { useReservation } from "../hooks/useReservation";
 
 const SIZE_META = {
   S: {
@@ -52,17 +54,6 @@ const PROMO_HIGHLIGHTS = [
   "Vernetzt mit SmartView-Plattform",
 ];
 
-const normalizeSize = (raw) => {
-  const val = (raw || "").toString().trim().toUpperCase();
-  if (["S", "SMALL"].includes(val)) return "S";
-  if (["M", "MEDIUM"].includes(val)) return "M";
-  if (["L", "LARGE"].includes(val)) return "L";
-  return "M";
-};
-
-const isAvailable = (status) =>
-  (status || "").toString().toLowerCase().includes("available");
-
 const formatPriceRange = (pricing, opts = {}) => {
   const currencySymbol = opts.currencySymbol ?? "€";
   const rate = opts.rate ?? 1;
@@ -72,48 +63,20 @@ const formatPriceRange = (pricing, opts = {}) => {
 };
 
 const KontainerCards = ({ containers, loading, error, onRetry }) => {
-  const [cityFilter, setCityFilter] = useState("all");
-
-  const cityOptions = useMemo(() => {
-    const set = new Set();
-    containers.forEach((item) => {
-      const city = (item?.attributes || item || {}).city;
-      if (city) set.add(city);
-    });
-    return ["all", ...Array.from(set)];
-  }, [containers]);
-
-  const filtered = useMemo(() => {
-    if (cityFilter === "all") return containers;
-    return containers.filter(
-      (item) => (item?.attributes || item || {}).city === cityFilter
-    );
-  }, [containers, cityFilter]);
-
-  const grouped = useMemo(() => {
-    const acc = {
-      S: { total: 0, available: 0, camera: 0 },
-      M: { total: 0, available: 0, camera: 0 },
-      L: { total: 0, available: 0, camera: 0 },
-    };
-    filtered.forEach((item) => {
-      const attrs = item?.attributes || item || {};
-      const size = normalizeSize(attrs.size);
-      if (!acc[size]) return;
-      acc[size].total += 1;
-      if (isAvailable(attrs.availability_status)) acc[size].available += 1;
-      if (attrs.has_camera) acc[size].camera += 1;
-    });
-    return acc;
-  }, [filtered]);
-
-  const cameraPromoCount = useMemo(() => {
-    const total = filtered.length;
-    const withCamera = filtered.filter(
-      (c) => (c?.attributes || c || {}).has_camera
-    ).length;
-    return { total, withCamera };
-  }, [filtered]);
+  const {
+    cityFilter,
+    setCityFilter,
+    cityOptions,
+    grouped,
+    cameraPromoCount,
+    selectedSize,
+    reserveOpen,
+    setReserveOpen,
+    offerOpen,
+    setOfferOpen,
+    openReservation,
+    openOffer,
+  } = useReservation(containers);
 
   const renderSizeCard = (sizeKey) => {
     const meta = SIZE_META[sizeKey];
@@ -140,10 +103,18 @@ const KontainerCards = ({ containers, loading, error, onRetry }) => {
               ))}
             </Stack>
             <Box sx={{ mt: "auto", display: "flex", gap: 1 }}>
-              <Button variant="contained" fullWidth>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={() => openReservation(sizeKey)}
+              >
                 Reservieren
               </Button>
-              <Button variant="outlined" fullWidth>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => openOffer(sizeKey)}
+              >
                 Angebot anfragen
               </Button>
             </Box>
@@ -306,6 +277,19 @@ const KontainerCards = ({ containers, loading, error, onRetry }) => {
           </Card>
         </>
       )}
+
+      <ReservationFlow
+        open={reserveOpen}
+        onClose={() => setReserveOpen(false)}
+        defaultCity={cityFilter === "all" ? undefined : cityFilter}
+        defaultSize={selectedSize}
+      />
+      <OfferForm
+        open={offerOpen}
+        onClose={() => setOfferOpen(false)}
+        defaultCity={cityFilter === "all" ? undefined : cityFilter}
+        defaultSize={selectedSize}
+      />
     </Container>
   );
 };
