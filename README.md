@@ -1,61 +1,73 @@
-# 🚀 Getting started with Strapi
+# Kontainer – Fullstack (Strapi + Vite/React/Tailwind)
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+## Estrutura
+- `backend/` – Strapi (rodar em http://localhost:1337)
+- `frontend/` – Vite + React + Tailwind (rodar em http://localhost:5173)
 
-### `develop`
+## Pré-requisitos
+- Node.js (>=18)
+- npm
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
-
+## Backend (Terminal 1)
+```bash
+cd backend
+npm install          # já feito se node_modules existir
+npm run build        # se ainda não buildou o admin
+HOST=0.0.0.0 PORT=1337 npm run start
 ```
-npm run develop
-# or
-yarn develop
+> Painel: http://localhost:1337/admin  
+> API:    http://localhost:1337/api/items
+
+### Collection Type
+Criada “items” com campos:
+- `title` (string, required)
+- `description` (text)
+- `status` (enum: draft, active)
+
+### Permissões públicas
+No admin: Settings → Users & Permissions → Roles → Public → habilitar `find`, `findOne`, `create` em “items”. Salve.
+
+### CORS
+Default do Strapi já aceita localhost. Se precisar, ajuste `config/middlewares.js`.
+
+## Frontend (Terminal 2)
+```bash
+cd frontend
+npm install
+# .env já contém VITE_API_URL=http://localhost:1337
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
+Abra: http://localhost:5173/kontainers (raiz do app).
 
-### `start`
+## Endpoints usados
+- GET  `${VITE_API_URL}/api/items`
+- POST `${VITE_API_URL}/api/items`
+  Payload:
+  ```json
+  {
+    "data": {
+      "title": "Meu item",
+      "description": "Opcional",
+      "status": "active"
+    }
+  }
+  ```
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+## Debug checklist
+- Backend up? `http://localhost:1337/api/items` deve responder 200.
+- Permissões Public liberadas? Se 403, habilite find/findOne/create.
+- CORS/baseURL? Confirme `.env` do front: `VITE_API_URL=http://localhost:1337`.
+- Portas: backend 1337, frontend 5173. Mate processos antigos com `lsof -i :1337` / `lsof -i :5173`.
 
-```
-npm run start
-# or
-yarn start
-```
-
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
-```
-
-## ⚙️ Deployment
-
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
-```
-
-## 📚 Learn more
-
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
-
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+## Frontend – Arquivos principais
+- `src/main.jsx` – bootstrap React
+- `src/App.jsx` – layout + página
+- `src/index.css` – Tailwind
+- `src/services/api.js` – `getItems`, `createItem` com try/catch
+- `src/components/Layout.jsx`
+- `src/components/Button.jsx`
+- `src/components/Input.jsx`
+- `src/components/ItemCard.jsx`
+- `src/components/ItemList.jsx` (GET + loading/erro/empty)
+- `src/components/CreateItemForm.jsx` (POST)
+- `src/pages/Home.jsx`

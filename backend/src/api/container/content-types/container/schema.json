@@ -17,22 +17,26 @@
     },
     "size": {
       "type": "enumeration",
-      "enum": ["S", "M", "L"],
       "required": true,
-      "default": "M"
+      "default": "M",
+      "enum": [
+        "S",
+        "M",
+        "L"
+      ]
     },
     "city": {
       "type": "enumeration",
-      "enum": ["Dusseldorf", "Koeln"],
       "required": true,
-      "default": "Dusseldorf"
+      "default": "Dusseldorf",
+      "enum": [
+        "Dusseldorf",
+        "Koeln"
+      ]
     },
     "has_camera": {
       "type": "boolean",
       "default": false
-    },
-    "internal_camera_id": {
-      "type": "string"
     },
     "availability_status": {
       "type": "enumeration",
@@ -43,11 +47,10 @@
         "rented"
       ]
     },
-    "reservation_requests": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::reservation-request.reservation-request",
-      "mappedBy": "container"
+    "priceMonthly": {
+      "type": "integer",
+      "required": true,
+      "min": 0
     }
   }
 }

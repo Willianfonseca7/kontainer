@@ -13,12 +13,6 @@ console.log("=== EXECUTANDO SEED ITEMS ===");
 const API_URL = process.env.API_URL || "http://localhost:1337";
 const ENDPOINT = `${API_URL}/api/items`;
 
-function randomInRange(min, max, seed) {
-  const n = seed % 997;
-  const normalized = (n % 100) / 100;
-  return Math.round((min + (max - min) * normalized) * 100) / 100;
-}
-
 async function getTotal() {
   const res = await fetch(`${ENDPOINT}?pagination[pageSize]=1`);
   const json = await res.json();
@@ -52,9 +46,9 @@ function buildItems() {
   ];
 
   const priceMap = {
-    S: { basic: [95, 110], premium: [120, 130] },
-    M: { basic: [140, 165], premium: [170, 190] },
-    L: { basic: [220, 250], premium: [260, 280] },
+    S: { basic: { tier: "p100", value: 100 }, premium: { tier: "p150", value: 150 } },
+    M: { basic: { tier: "p150", value: 150 }, premium: { tier: "p200", value: 200 } },
+    L: { basic: { tier: "p200", value: 200 }, premium: { tier: "p250", value: 250 } },
   };
 
   const items = [];
@@ -68,8 +62,7 @@ function buildItems() {
         const seq = sizeIdx * 10 + i + 1; // 1..30 por cidade
         const code = `${prefix}-${String(seq).padStart(2, "0")}`;
 
-        const [minP, maxP] = priceMap[size][tier];
-        const priceMonthly = randomInRange(minP, maxP, seq + cityIdx * 1000);
+        const priceInfo = priceMap[size][tier];
 
         const title = `Container ${size} ${tier === "premium" ? "Premium" : "Basic"} – ${name}`;
         const description = hasCamera
@@ -82,10 +75,11 @@ function buildItems() {
           size,
           hasCamera,
           tier,
+          priceTier: priceInfo.tier,
           title,
           description,
-          status: "active",
-          priceMonthly,
+          status: "available",
+          priceMonthly: priceInfo.value,
         });
       }
     });

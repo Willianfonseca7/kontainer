@@ -520,63 +520,24 @@ export interface ApiContainerContainer extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     has_camera: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    internal_camera_id: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::container.container'
     > &
       Schema.Attribute.Private;
+    priceMonthly: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     publishedAt: Schema.Attribute.DateTime;
-    reservation_requests: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::reservation-request.reservation-request'
-    >;
     size: Schema.Attribute.Enumeration<['S', 'M', 'L']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'M'>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiItemItem extends Struct.CollectionTypeSchema {
-  collectionName: 'items';
-  info: {
-    displayName: 'Item';
-    pluralName: 'items';
-    singularName: 'item';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    city: Schema.Attribute.Enumeration<['D\u00FCsseldorf', 'K\u00F6ln']> &
-      Schema.Attribute.Required;
-    code: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    hasCamera: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::item.item'> &
-      Schema.Attribute.Private;
-    priceMonthly: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    size: Schema.Attribute.Enumeration<['S', 'M', 'L']> &
-      Schema.Attribute.Required;
-    status: Schema.Attribute.Enumeration<['active']> &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'active'>;
-    tier: Schema.Attribute.Enumeration<['basic', 'premium']> &
-      Schema.Attribute.Required;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -629,10 +590,6 @@ export interface ApiReservationRequestReservationRequest
   attributes: {
     city: Schema.Attribute.Enumeration<['DUS', 'KOL']> &
       Schema.Attribute.Required;
-    container: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::container.container'
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1176,7 +1133,6 @@ declare module '@strapi/strapi' {
       'api::contact.contact': ApiContactContact;
       'api::container-model.container-model': ApiContainerModelContainerModel;
       'api::container.container': ApiContainerContainer;
-      'api::item.item': ApiItemItem;
       'api::location.location': ApiLocationLocation;
       'api::reservation-request.reservation-request': ApiReservationRequestReservationRequest;
       'plugin::content-releases.release': PluginContentReleasesRelease;

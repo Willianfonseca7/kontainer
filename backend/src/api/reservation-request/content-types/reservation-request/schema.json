@@ -51,12 +51,6 @@
     },
     "notes": {
       "type": "text"
-    },
-    "container": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::container.container",
-      "inversedBy": "reservation_requests"
     }
   }
 }
