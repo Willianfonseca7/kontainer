@@ -13,6 +13,7 @@ function normalizeContainer(entry) {
   const code = attrs.code;
   const priceRaw = attrs.price ?? attrs.priceMonthly ?? attrs.price_monthly;
   const price = priceRaw !== undefined ? Number(priceRaw) : 0;
+  const priceMonthly = priceRaw !== undefined ? Number(priceRaw) : 0;
 
   return {
     id: entry.id ?? attrs.id,
@@ -24,6 +25,7 @@ function normalizeContainer(entry) {
     availabilityStatus: status,
     status,
     price,
+    priceMonthly,
   };
 }
 
@@ -36,6 +38,17 @@ export async function getContainers() {
   const json = await res.json();
   const data = Array.isArray(json?.data) ? json.data : [];
   return data.map(normalizeContainer).filter(Boolean);
+}
+
+export async function getContainerById(id) {
+  const res = await fetch(`${CONTAINERS_ENDPOINT}/${id}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GET /containers/${id} failed: ${res.status} - ${text}`);
+  }
+  const json = await res.json();
+  const entry = json?.data;
+  return normalizeContainer(entry);
 }
 
 export async function sendContactMessage(payload) {

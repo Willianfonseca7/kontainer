@@ -6,6 +6,7 @@ const KontainerContext = createContext(null);
 
 export const defaultFilters = {
   location: 'all',
+  size: 'all',
 };
 
 export function normalizeText(str) {
@@ -22,6 +23,10 @@ export function applyFilters(containers, filters) {
     if (filters.location !== 'all') {
       const city = item.city || item.location;
       if (normalizeText(city) !== normalizeText(filters.location)) return false;
+    }
+    if (filters.size !== 'all') {
+      const size = item.size || item.sizeM2;
+      if (normalizeText(size) !== normalizeText(filters.size)) return false;
     }
     return true;
   });

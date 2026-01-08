@@ -17,7 +17,7 @@ export default function ContainerCard({ container, onBook }) {
   const isAvailable = status === 'available' || status === 'available';
   const handleBook = () => {
     if (typeof onBook === 'function') {
-      onBook(container.id || code);
+      onBook(container);
     }
   };
   const displayPrice =
@@ -53,8 +53,9 @@ export default function ContainerCard({ container, onBook }) {
           disabled={!isAvailable}
           onClick={handleBook}
         >
-          {isAvailable ? t('cards.available') : t('cards.unavailable')}
+          {isAvailable ? 'Reservieren' : 'Nicht verfügbar'}
         </Button>
+        {/* TODO auth: se usuário não estiver logado, redirecionar para /login?redirect=/containers/:id antes do submit */}
       </div>
     </Card>
   );

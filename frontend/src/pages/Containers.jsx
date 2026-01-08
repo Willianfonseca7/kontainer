@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import FiltersBar from '../components/domain/FiltersBar';
 import ContainerGrid from '../components/domain/ContainerGrid';
@@ -7,6 +7,8 @@ import { normalizeText, useKontainer } from '../context/KontainerContext';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import { useI18n } from '../context/I18nContext';
+import { useAuth } from '../context/AuthContext';
+import ReservationPreviewModal from '../components/domain/ReservationPreviewModal';
 
 const sizeMeta = {
   S: {
@@ -64,7 +66,7 @@ function formatPriceText(noCam, cam, lang, t) {
     : `From ${noCamText}/month • Camera from ${camText}/month`;
 }
 
-function SizeCard({ size, items, loading, t, lang }) {
+function SizeCard({ size, items, loading, t, lang, onClick, disabled }) {
   const imgSrc = sizeIllustrations[size];
   const total = items.length;
   const available = items.filter((i) => (i.status || i.availabilityStatus || 'available') === 'available').length;
@@ -89,7 +91,20 @@ function SizeCard({ size, items, loading, t, lang }) {
   const priceText = formatPriceText(minNoCam, minCam, lang, t);
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      role="button"
+      tabIndex={0}
+      aria-disabled={disabled}
+      onClick={() => !disabled && onClick?.()}
+      onKeyDown={(e) => {
+        if (disabled) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      className="overflow-hidden cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-black/10 transition hover:-translate-y-[1px]"
+    >
       <div className="h-44 w-full bg-slate-200">
         <img
           src={imgSrc}
@@ -120,6 +135,22 @@ function SizeCard({ size, items, loading, t, lang }) {
             {t('containers.emptySize')}
           </div>
         ) : null}
+        {total ? (
+          <div className="pt-2">
+            <Button
+              size="sm"
+              variant="primary"
+              className="w-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick?.();
+              }}
+              disabled={disabled}
+            >
+              Reservieren
+            </Button>
+          </div>
+        ) : null}
       </div>
     </Card>
   );
@@ -133,7 +164,12 @@ function isAdmin() {
 export default function Containers() {
   const { filteredContainers, filters, setFilter, loading, error, reload, containers } = useKontainer();
   const { t, lang } = useI18n();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [selectedContainer, setSelectedContainer] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(1);
 
   const selectedLocation = filters.location;
 
@@ -170,8 +206,51 @@ export default function Containers() {
 
   const hasNoData = containers.length === 0;
 
+  const pickFirstAvailableBySize = (all, size) => {
+    const list = Array.isArray(all) ? all : [];
+    return list.find((c) => {
+      const s = c.size || c.sizeM2 || c.sizeValue;
+      const st = c.status || c.availabilityStatus || c.availability_status;
+      return String(s || '').toUpperCase() === String(size || '').toUpperCase() && String(st) === 'available';
+    });
+  };
+
+  useEffect(() => {
+    const qsSize = searchParams.get('size');
+    if (qsSize) {
+      setFilter('size', qsSize.toUpperCase());
+      const el = document.getElementById('inventory');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [searchParams, setFilter]);
+
+  const handleSelectSize = async (size) => {
+    try {
+      const fromState = filteredContainers?.length ? filteredContainers : containers;
+      let all = fromState;
+      if (!Array.isArray(all) || all.length === 0) {
+        const { getContainers: fetchContainers } = await import('../services/api');
+        all = await fetchContainers();
+      }
+      const first = pickFirstAvailableBySize(all, size);
+      if (!first?.id) {
+        alert('Nenhum container disponível para este tamanho agora.');
+        return;
+      }
+      setSelectedContainer(first);
+      setSelectedDuration(1);
+      setIsPreviewOpen(true);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('handleSelectSize failed:', e);
+      alert('Falha ao abrir o detalhe do container. Veja o console.');
+    }
+  };
+
   return (
-    <div className="space-y-6 py-10">
+    <div className="space-y-6 py-10" id="inventory">
       <header className="flex flex-col gap-2">
         <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{t('containers.badge')}</p>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -193,7 +272,16 @@ export default function Containers() {
 
       <div className="grid gap-4 md:grid-cols-3">
         {grouped.map(({ size, items }) => (
-          <SizeCard key={size} size={size} items={items} loading={loading} t={t} lang={lang} />
+          <SizeCard
+            key={size}
+            size={size}
+            items={items}
+            loading={loading}
+            t={t}
+            lang={lang}
+            onClick={() => handleSelectSize(size)}
+            disabled={!items.length}
+          />
         ))}
         {hasNoData ? (
           <div className="md:col-span-3 rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-slate-600">
@@ -229,7 +317,11 @@ export default function Containers() {
           <ContainerGrid
             containers={filteredContainers}
             loading={loading}
-            onBook={(id) => navigate(`/containers/${id}`)}
+            onBook={(container) => {
+              setSelectedContainer(container);
+              setSelectedDuration(1);
+              setIsPreviewOpen(true);
+            }}
           />
         </div>
       ) : (
@@ -237,6 +329,32 @@ export default function Containers() {
           {t('containers.adminOnly')}
         </div>
       )}
+
+      <ReservationPreviewModal
+        open={isPreviewOpen}
+        container={selectedContainer}
+        onClose={() => setIsPreviewOpen(false)}
+        onContinue={(duration) => {
+          if (!selectedContainer?.id) return;
+          const draft = {
+            containerId: selectedContainer.id,
+            code: selectedContainer.code,
+            size: selectedContainer.size || selectedContainer.sizeM2,
+            city: selectedContainer.city || selectedContainer.location,
+            hasCamera: selectedContainer.hasCamera ?? selectedContainer.has_camera,
+            priceMonthly: selectedContainer.priceMonthly ?? selectedContainer.price,
+            durationMonths: duration || selectedDuration,
+          };
+          sessionStorage.setItem('reservationDraft', JSON.stringify(draft));
+          const targetPath = `/containers/${selectedContainer.id}`;
+          if (!isAuthenticated) {
+            // TODO: implementar /login com redirect
+            navigate(`/login?redirect=${encodeURIComponent('/containers')}`);
+            return;
+          }
+          navigate(targetPath, { state: { container: selectedContainer } });
+        }}
+      />
     </div>
   );
 }
