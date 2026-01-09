@@ -1,7 +1,7 @@
 import React from 'react';
 import { useI18n } from '../../context/I18nContext';
 
-// Kommentar: einfacher Sprachumschalter (DE/EN) ohne Persistenz.
+// Kommentar: einfacher Sprachumschalter (DE/EN/PT) ohne Persistenz.
 
 export default function LanguageSwitcher() {
   const { lang, setLang } = useI18n();
@@ -21,6 +21,13 @@ export default function LanguageSwitcher() {
         className={`px-2 py-1 rounded-full border ${lang === 'en' ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-700 hover:border-slate-400'}`}
       >
         EN
+      </button>
+      <button
+        type="button"
+        onClick={() => setLang('pt')}
+        className={`px-2 py-1 rounded-full border ${lang === 'pt' ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-700 hover:border-slate-400'}`}
+      >
+        PT
       </button>
     </div>
   );
