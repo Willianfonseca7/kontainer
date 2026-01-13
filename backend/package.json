@@ -18,6 +18,7 @@
     "@strapi/plugin-cloud": "5.32.0",
     "@strapi/plugin-users-permissions": "5.32.0",
     "@strapi/strapi": "5.32.0",
+    "@strapi/data-transfer": "5.32.0",
     "better-sqlite3": "12.4.1",
     "esbuild": "^0.21.5",
     "zod": "^4.0.0",
